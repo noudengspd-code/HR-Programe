@@ -597,6 +597,26 @@ table.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:560px}
   .doc-id-photo{align-self:flex-start;width:100%;min-height:120px;flex-basis:auto}
   .sign-block{grid-template-columns:1fr 1fr!important}
 }
+/* connection test panel */
+.fbt-url{font-size:11.5px;color:var(--text-2);margin-top:10px;word-break:break-all;line-height:1.7}
+.fbt-out{margin-top:10px}
+.fbt-out:empty{display:none}
+.fbt-row{display:flex;gap:9px;align-items:flex-start;padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:12.5px;background:var(--paper)}
+.fbt-ic{flex:0 0 auto;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;background:#B0B0B0;margin-top:1px}
+.fbt-run .fbt-ic{background:var(--gold-2)}
+.fbt-ok .fbt-ic{background:#2BA84A}
+.fbt-fail .fbt-ic{background:#D64A3A}
+.fbt-fail{border-color:#F0C9C3;background:#FBEDEA}
+.fbt-err{font-size:11.5px;color:var(--danger);margin-top:3px;line-height:1.55}
+/* admin edit mode */
+.edit-banner{background:var(--warn-soft);border:1px solid var(--gold-soft);color:var(--gold-2);padding:9px 12px;border-radius:8px;font-size:12.5px;font-weight:600;margin-bottom:14px}
+.edit-sec{margin-bottom:14px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--paper)}
+.edit-sec-t{font-weight:700;font-size:13px;color:var(--ink-3);margin-bottom:8px}
+.edit-row{display:flex;gap:10px;align-items:center;margin-bottom:7px}
+.edit-row label{flex:0 0 200px;font-size:12px;color:var(--text-2)}
+.edit-row input,.edit-row textarea{flex:1;padding:8px 10px;border:1px solid var(--line-2);border-radius:7px;font-size:13px;color:var(--ink-3);font-family:inherit;background:var(--paper-3)}
+.edit-row input:focus,.edit-row textarea:focus{outline:none;border-color:var(--gold-2)}
+@media(max-width:760px){ .edit-row{flex-direction:column;align-items:stretch} .edit-row label{flex:auto} }
 /* connection status pill */
 .conn-pill{font-size:11px;font-weight:700;padding:5px 11px 5px 22px;border-radius:20px;border:1px solid var(--line-2);background:var(--paper-3);color:var(--text-2);cursor:pointer;white-space:nowrap;position:relative;font-family:inherit}
 .conn-pill::before{content:"";position:absolute;left:9px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:#B0B0B0}
@@ -691,7 +711,7 @@ const I = {
 const ic = (n,cls='') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[n]||''}</svg>`;
 
 /* ---------- STATE ---------- */
-const state = { role:'hr', page:'dashboard', drawer:false, manualKey:null, manualTab:'overview', doc:null, authUser:null };
+const state = { role:'hr', page:'dashboard', drawer:false, manualKey:null, manualTab:'overview', doc:null, docEdit:false, authUser:null };
 
 /* ---------- COMPANY PROFILE (configurable, official header) ---------- */
 const company = {
@@ -2064,6 +2084,40 @@ function connectFirebase(){
   Promise.resolve(initOnline()).then(ok=>{ toast(ok?'ເຊື່ອມຕໍ່ສຳເລັດ · ໂໝດອອນລາຍ':('ເຊື່ອມຕໍ່ບໍ່ສຳເລັດ'+(Store._error?': '+Store._error:'')), !!ok); renderShell(); });
 }
 function disconnectFirebase(){ if(Store._unsub){ try{ Store._unsub(); }catch(e){} Store._unsub=null; } try{ if(typeof localStorage!=='undefined') localStorage.removeItem(FB_KEY); }catch(e){} Store.online=false; Store.add=null; Store.remove=null; toast('ຕັດການເຊື່ອມຕໍ່ — ກັບສູ່ໂໝດ Local (config ຖືກຝັງໄວ້ ຈຶ່ງເຊື່ອມຄືນເມື່ອໂຫຼດໜ້າໃໝ່)', true); renderShell(); }
+async function wipeAllDocs(){
+  if(typeof confirm==='function' && !confirm('ຢືນຢັນລ້າງເອກະສານທັງໝົດ (local + cloud)? ບໍ່ສາມາດກູ້ຄືນໄດ້.')) return;
+  if(Store.online && Store._col && Store._db){
+    try{ const snap=await Store._col.get(); let batch=Store._db.batch(), n=0;
+      const commits=[];
+      snap.forEach(d=>{ batch.delete(d.ref); n++; if(n%450===0){ commits.push(batch.commit()); batch=Store._db.batch(); } });
+      commits.push(batch.commit()); await Promise.all(commits);
+    }catch(e){ toast('ລ້າງ cloud ບໍ່ສຳເລັດ: '+((e&&(e.code||e.message))||'error'), false); }
+  }
+  SAVED.length=0; Store.persist(); state.doc=null; toast('ລ້າງຂໍ້ມູນເອກະສານທັງໝົດແລ້ວ', true); renderShell();
+}
+async function testConnection(){
+  const out=$('#fb-test-out'); const log=[];
+  const render=()=>{ if(out) out.innerHTML = log.map(x=>`<div class="fbt-row fbt-${x.s}"><span class="fbt-ic">${x.s==='ok'?'✓':(x.s==='run'?'…':'✕')}</span><div><div>${escapeHtml(x.t)}</div>${x.e?`<div class="fbt-err">${escapeHtml(x.e)}</div>`:''}</div></div>`).join(''); };
+  const step=(t)=>{ const o={t,s:'run',e:''}; log.push(o); render(); return o; };
+  const cfg=getFbConfig();
+  let s=step('ກວດ config'); if(!cfg||!cfg.apiKey||!cfg.projectId){ s.s='fail'; s.e='ບໍ່ພົບ config'; render(); return; } s.s='ok'; s.t='config ພົບແລ້ວ: project '+cfg.projectId; render();
+  s=step('ກວດວ່າເປີດຜ່ານ https'); const proto=(typeof location!=='undefined'?location.protocol:'?'); if(proto!=='https:'){ s.s='fail'; s.e='ກຳລັງເປີດຢູ່ "'+proto+'" — Firebase ຕ້ອງ https:// ເທົ່ານັ້ນ. ໃຫ້ deploy ຂຶ້ນ host (Netlify/Firebase Hosting) ແລ້ວເປີດ URL https.'; render(); return; } s.s='ok'; s.t='ເປີດຜ່ານ https ✓'; render();
+  s=step('ໂຫລດ Firebase SDK ຈາກ gstatic');
+  try{ if(!(window.firebase&&window.firebase.firestore)){ await withTimeout(loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js'),15000,'ໝົດເວລາ 15 ວິ (network/ຖືກບລັອກ)'); await withTimeout(loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'),15000,'ໝົດເວລາ 15 ວິ (network/ຖືກບລັອກ)'); } if(!window.firebase||!window.firebase.firestore) throw new Error('firebase SDK ບໍ່ພ້ອມຫຼັງໂຫລດ'); s.s='ok'; s.t='ໂຫລດ SDK ສຳເລັດ ✓'; render(); }
+  catch(e){ s.s='fail'; s.e=(e&&e.message)||String(e); render(); return; }
+  s=step('ເລີ່ມຕົ້ນ app + Firestore'); let db;
+  try{ (window.firebase.apps&&window.firebase.apps.length)?window.firebase.app():window.firebase.initializeApp(cfg); db=window.firebase.firestore(); s.s='ok'; render(); }
+  catch(e){ s.s='fail'; s.e=(e&&e.message)||String(e); render(); return; }
+  s=step('ທົດສອບ ຂຽນ (write) ໃສ່ Firestore');
+  try{ await db.collection('hrms_documents').doc('__conntest__').set({t:Date.now(), test:true}); s.s='ok'; s.t='ຂຽນສຳເລັດ ✓'; render(); }
+  catch(e){ s.s='fail'; s.e='ຂຽນບໍ່ໄດ້: '+((e&&(e.code||e.message))||String(e))+'  → ສ່ວນຫຼາຍແມ່ນ Rules ຫ້າມ ຫຼື API key ຖືກຈຳກັດ'; render(); return; }
+  s=step('ທົດສອບ ອ່ານ (read) ຄືນ');
+  try{ const d=await db.collection('hrms_documents').doc('__conntest__').get(); if(!d.exists) throw new Error('ອ່ານບໍ່ພົບ'); s.s='ok'; s.t='ອ່ານສຳເລັດ ✓'; render(); }
+  catch(e){ s.s='fail'; s.e='ອ່ານບໍ່ໄດ້: '+((e&&(e.code||e.message))||String(e)); render(); return; }
+  try{ await db.collection('hrms_documents').doc('__conntest__').delete(); }catch(e){}
+  s=step('🎉 ສຳເລັດທັງໝົດ — ກຳລັງເປີດໂໝດອອນລາຍ'); s.s='ok'; render();
+  await initOnline(); renderShell();
+}
 function renderSettings(){
   const savedFb=getFbConfig(); const fbCfgStr = savedFb?escapeHtml(JSON.stringify(savedFb,null,2)):'';
   const matrixRows = MODULES.filter(m=>m.key!=='dashboard').map(m=>{
@@ -2134,7 +2188,15 @@ function renderSettings(){
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
         <button class="btn btn-gold btn-sm" data-fb-connect>${ic('send')} ເຊື່ອມຕໍ່ຖານຂໍ້ມູນ</button>
         <button class="btn btn-ghost btn-sm" data-fb-disconnect>${ic('x')} ຕັດການເຊື່ອມຕໍ່</button>
+        <button class="btn btn-ghost btn-sm" data-fb-test>${ic('shield')} ທົດສອບການເຊື່ອມຕໍ່ (ວິນິດໄສ)</button>
       </div>
+      <div class="fbt-url">ກຳລັງເປີດຢູ່: <b>${escapeHtml(typeof location!=='undefined'?(location.href||'?'):'?')}</b> ${(typeof location!=='undefined'&&location.protocol==='https:')?'<span class="badge b-success">https ✓</span>':'<span class="badge" style="background:var(--danger-soft);color:var(--danger)">ບໍ່ແມ່ນ https ✕ — ຕ້ອງ deploy ກ່ອນ</span>'}</div>
+      <div id="fb-test-out" class="fbt-out"></div>
+    </div>
+    <div class="card card-pad" style="margin-top:16px;border-color:#F0C9C3">
+      <div class="section-title"><span class="num" style="background:var(--danger-soft);color:var(--danger)">${ic('alert')}</span> ຈັດການຂໍ້ມູນ (ແອັດມິນ)</div>
+      <p class="nm" style="font-size:12.5px;color:var(--text-2);margin-bottom:12px">ລ້າງ<b>ເອກະສານທັງໝົດ</b>ອອກຈາກທັງ local ແລະ cloud (Firestore) — ໃຊ້ເພື່ອລຶບຂໍ້ມູນທົດລອງ/ຂໍ້ມູນປອມ ໃຫ້ເລີ່ມຕົ້ນຈາກສູນ. ຂໍ້ມູນພະນັກງານ (ລາຍຊື່) ບໍ່ຖືກລຶບ.</p>
+      <button class="btn btn-sm" style="background:var(--danger);color:#fff;border:none" data-wipe-docs>${ic('x')} ລ້າງຂໍ້ມູນເອກະສານທັງໝົດ (local + cloud)</button>
     </div>
     ${relatedLinks('settings')}
   </div>`;
@@ -2293,7 +2355,7 @@ function wireScore(cls,totalId,gradeId){
    ============================================================ */
 function go(page){
   if(!availableModules().some(m=>m.key===page)) page='dashboard';
-  state.page=page; state.doc=null; closeDrawer(); hidePop(); renderShell();
+  state.page=page; state.doc=null; state.docEdit=false; closeDrawer(); hidePop(); renderShell();
 }
 function setRole(role){
   if(!ROLES[role]) return;
@@ -2307,7 +2369,7 @@ function approve(no, ok){
   renderShell();
 }
 document.addEventListener('click', e=>{
-  const t = e.target.closest('[data-nav],[data-role],[data-menu],[data-open-manual],[data-help],[data-drawer-close],[data-tab],[data-pop-open],[data-approve],[data-reject],[data-submit],[data-view-doc],[data-back],[data-print],[data-download],[data-emp],[data-emp-close],[data-emp-tab],[data-export],[data-print-table],[data-export-staff],[data-arc-export],[data-arc-print],[data-duty-add],[data-duty-del],[data-sign-pick],[data-sign-clear],[data-sig-save],[data-sig-del],[data-sig-choose],[data-sigpick-close],[data-task-view],[data-task-add],[data-task-submit],[data-task-approve],[data-task-del],[data-task-date],[data-task-nav],[data-doc-del],[data-backup-export],[data-save-company],[data-fb-connect],[data-fb-disconnect],[data-login],[data-logout],[data-login-demo],[data-fb-status]');
+  const t = e.target.closest('[data-nav],[data-role],[data-menu],[data-open-manual],[data-help],[data-drawer-close],[data-tab],[data-pop-open],[data-approve],[data-reject],[data-submit],[data-view-doc],[data-back],[data-print],[data-download],[data-emp],[data-emp-close],[data-emp-tab],[data-export],[data-print-table],[data-export-staff],[data-arc-export],[data-arc-print],[data-duty-add],[data-duty-del],[data-sign-pick],[data-sign-clear],[data-sig-save],[data-sig-del],[data-sig-choose],[data-sigpick-close],[data-task-view],[data-task-add],[data-task-submit],[data-task-approve],[data-task-del],[data-task-date],[data-task-nav],[data-doc-del],[data-backup-export],[data-save-company],[data-fb-connect],[data-fb-disconnect],[data-login],[data-logout],[data-login-demo],[data-fb-status],[data-doc-edit],[data-doc-save-edit],[data-doc-edit-cancel],[data-wipe-docs],[data-fb-test]');
   if(!t) return;
   const d=t.dataset;
   if(d.nav!=null) go(d.nav);
@@ -2356,6 +2418,11 @@ document.addEventListener('click', e=>{
   else if(d.logout!=null) logout();
   else if(d.loginDemo!=null) fillDemo(d.loginDemo);
   else if(d.fbStatus!=null) go('settings');
+  else if(d.docEdit!=null){ state.docEdit=true; renderShell(); }
+  else if(d.docSaveEdit!=null) saveDocEdit();
+  else if(d.docEditCancel!=null){ state.docEdit=false; renderShell(); }
+  else if(d.wipeDocs!=null) wipeAllDocs();
+  else if(d.fbTest!=null) testConnection();
   else if(d.submit!=null) saveFormDoc(state.page);
 });
 document.addEventListener('input', e=>{
@@ -2409,7 +2476,7 @@ const FIREBASE_CONFIG = {
 };
 const DB_KEY = 'hrms_documents_v3';
 const Store = {
-  online:false, add:null, remove:null, _error:null, _ready:false, _unsub:null, _trying:false,
+  online:false, add:null, remove:null, _error:null, _ready:false, _unsub:null, _trying:false, _db:null, _col:null,
   load(){ try{ if(typeof localStorage!=='undefined'){ const raw=localStorage.getItem(DB_KEY);
       if(raw){ const arr=JSON.parse(raw); if(Array.isArray(arr)){ SAVED.length=0; arr.forEach(d=>SAVED.push(d));
         let mx=1000; SAVED.forEach(d=>{ const n=parseInt(String(d.id).replace(/\D/g,''),10); if(n>mx) mx=n; }); DOC_SEQ=mx; return true; } } } }catch(e){} return false; },
@@ -2418,6 +2485,7 @@ const Store = {
 };
 function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.async=true; s.onload=()=>res(); s.onerror=()=>rej(new Error('ໂຫລດ SDK ບໍ່ໄດ້ (ກວດອິນເຕີເນັດ/CSP): '+src)); document.head.appendChild(s); }); }
 function fbClean(rec){ try{ return JSON.parse(JSON.stringify(rec)); }catch(e){ return rec; } }
+function withTimeout(p, ms, msg){ return Promise.race([ p, new Promise((_,rej)=>setTimeout(()=>rej(new Error(msg)), ms)) ]); }
 let _fbApp=null;
 async function initOnline(){
   const cfg = getFbConfig();
@@ -2425,13 +2493,14 @@ async function initOnline(){
   Store._trying=true;
   try{
     if(!(window.firebase && window.firebase.firestore)){
-      await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
-      await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js');
+      await withTimeout(loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js'), 12000, 'ໂຫລດ Firebase SDK ຊ້າ/ຖືກບລັອກ (ກວດ network/CSP)');
+      await withTimeout(loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'), 12000, 'ໂຫລດ Firebase SDK ຊ້າ/ຖືກບລັອກ (ກວດ network/CSP)');
     }
     if(!window.firebase) throw new Error('Firebase SDK ບໍ່ພ້ອມ');
     _fbApp = (window.firebase.apps && window.firebase.apps.length) ? window.firebase.app() : window.firebase.initializeApp(cfg);
     const db = window.firebase.firestore();
     const col = db.collection('hrms_documents');
+    Store._db = db; Store._col = col;
     Store.add = (rec)=> col.doc(String(rec.id)).set(fbClean(rec));
     Store.remove = (id)=> col.doc(String(id)).delete();
     /* one-time seed: if cloud is empty but we have local docs, push them up */
@@ -2446,6 +2515,7 @@ async function initOnline(){
       if(typeof renderShell==='function') renderShell();
     }, err=>{ Store._error=(err&&(err.code||err.message))||'snapshot error'; if(typeof console!=='undefined') console.warn('snapshot error', err); toast('Firestore ຜິດພາດ: '+Store._error+' — ກວດ Rules ຂອງ Firestore', false); if(typeof renderShell==='function') renderShell(); });
     Store.online = true; Store._error=null; Store._trying=false;
+    setTimeout(()=>{ if(Store.online && !Store._ready){ Store._error='ໝົດເວລາລໍຖ້າ Firestore — ກວດ Rules / network / ຕ້ອງເປີດຜ່ານ https'; if(typeof renderShell==='function') renderShell(); } }, 12000);
     return true;
   }catch(e){ Store.online=false; Store._trying=false; Store._error=(e&&e.message)||String(e); if(typeof console!=='undefined') console.warn('online init failed:', e); if(typeof renderShell==='function') renderShell(); return false; }
 }
@@ -2568,22 +2638,54 @@ function buildDocHTML(rec){
   </div>`;
 }
 
+function editDocHTML(rec){
+  const secHtml = (rec.sections||[]).map((s,si)=>{
+    const rows = (s.rows||[]).map((r,ri)=> s.kind==='duties'
+      ? `<div class="edit-row"><label>${escapeHtml(r[1]||'•')}</label><input type="text" data-edit="s${si}r${ri}c2" value="${escapeHtml(r[2]||'')}"></div>`
+      : `<div class="edit-row"><label>${escapeHtml(r[0]||'')}</label><input type="text" data-edit="s${si}r${ri}c1" value="${escapeHtml(r[1]||'')}"></div>`
+    ).join('');
+    return `<div class="edit-sec"><div class="edit-sec-t">${escapeHtml(s.title||'')}</div>${rows}</div>`;
+  }).join('');
+  const calcHtml = (rec.calc&&rec.calc.length)? `<div class="edit-sec"><div class="edit-sec-t">ຜົນການຄິດໄລ່</div>${rec.calc.map((r,ci)=>`<div class="edit-row"><label>${escapeHtml(r[0]||'')}</label><input type="text" data-edit-calc="${ci}" value="${escapeHtml(r[1]||'')}"></div>`).join('')}</div>`:'';
+  const outHtml = (rec.outcome!=null&&rec.outcome!=='')? `<div class="edit-sec"><div class="edit-sec-t">ຜົນ / ມະຕິ</div><div class="edit-row"><textarea data-edit-outcome rows="2">${escapeHtml(rec.outcome||'')}</textarea></div></div>`:'';
+  const revHtml = (rec.review&&(rec.review.name||rec.review.note))? `<div class="edit-sec"><div class="edit-sec-t">ຄຳຄິດເຫັນ ຫົວໜ້າ</div><div class="edit-row"><label>ຜູ້ໃຫ້ຄຳເຫັນ</label><input type="text" data-edit-review-name value="${escapeHtml(rec.review.name||'')}"></div><div class="edit-row"><label>ໝາຍເຫດ</label><textarea data-edit-review-note rows="2">${escapeHtml(rec.review.note||'')}</textarea></div></div>`:'';
+  return `<div class="doc" style="padding:22px">
+    <div class="edit-banner">${ic('cog')} ໂໝດແກ້ໄຂ (ແອັດມິນ) — ແກ້ຄ່າແລ້ວກົດ “ບັນທຶກການແກ້ໄຂ”</div>
+    <div class="edit-sec"><div class="edit-sec-t">ຂໍ້ມູນຫຼັກ</div>
+      <div class="edit-row"><label>ປະເພດເອກະສານ</label><input type="text" data-edit-top="docType" value="${escapeHtml(rec.docType||'')}"></div>
+      <div class="edit-row"><label>ຊື່ / ຫົວຂໍ້</label><input type="text" data-edit-top="name" value="${escapeHtml(rec.name||'')}"></div>
+      <div class="edit-row"><label>ວັນທີ</label><input type="date" data-edit-top="date" value="${escapeHtml(rec.date||'')}"></div>
+      <div class="edit-row"><label>ສະຖານະ</label><input type="text" data-edit-top="status" value="${escapeHtml(rec.status||'')}"></div>
+    </div>
+    ${secHtml}${calcHtml}${outHtml}${revHtml}
+  </div>`;
+}
+function saveDocEdit(){
+  const rec = SAVED.find(d=>d.id===state.doc); if(!rec) return;
+  const doc = document.querySelector('#print-area'); if(!doc) return;
+  const gv=sel=>{ const el=doc.querySelector(sel); return el?el.value:undefined; };
+  ['docType','name','date','status'].forEach(k=>{ const v=gv('[data-edit-top="'+k+'"]'); if(v!==undefined) rec[k]=v; });
+  (rec.sections||[]).forEach((s,si)=>{ (s.rows||[]).forEach((r,ri)=>{ if(s.kind==='duties'){ const v=gv('[data-edit="s'+si+'r'+ri+'c2"]'); if(v!==undefined) r[2]=v; } else { const v=gv('[data-edit="s'+si+'r'+ri+'c1"]'); if(v!==undefined) r[1]=v; } }); });
+  if(rec.calc) rec.calc.forEach((r,ci)=>{ const v=gv('[data-edit-calc="'+ci+'"]'); if(v!==undefined) r[1]=v; });
+  const oc=doc.querySelector('[data-edit-outcome]'); if(oc) rec.outcome=oc.value;
+  if(rec.review){ const rn=gv('[data-edit-review-name]'); if(rn!==undefined) rec.review.name=rn; const nt=doc.querySelector('[data-edit-review-note]'); if(nt) rec.review.note=nt.value; }
+  Store.save(rec); state.docEdit=false; toast('ບັນທຶກການແກ້ໄຂແລ້ວ', true); renderShell();
+}
 function renderDocView(){
   const rec = SAVED.find(d=>d.id===state.doc);
   if(!rec) return `<div class="page">${pageHead({eyebrow:'ຄັງເອກະສານ', title:'ບໍ່ພົບເອກະສານ'})}
     <button class="btn btn-ghost" data-nav="archive">${ic('chevron')} ກັບໄປຄັງເອກະສານ</button></div>`;
   const m = modByKey(rec.module);
+  const isAdmin = state.role==='hr';
+  const editing = !!state.docEdit;
+  const backLabel = m?' ໄປ'+m.label.replace(/\s*\(.*\)/,''):'';
+  const tools = editing
+    ? `<button class="btn btn-ghost btn-sm" data-doc-edit-cancel>${ic('x')} ຍົກເລີກ</button><div class="spacer"></div><button class="btn btn-gold btn-sm" data-doc-save-edit>${ic('check')} ບັນທຶກການແກ້ໄຂ</button>`
+    : `<button class="btn btn-ghost btn-sm" data-back="${rec.module}">${ic('chevron')} ກັບຄືນ${backLabel}</button><div class="spacer"></div>${isAdmin?`<button class="btn btn-ghost btn-sm" data-doc-edit="${rec.id}">${ic('cog')} ແກ້ໄຂ</button>`:''}<button class="btn btn-ghost btn-sm" data-print>${ic('print')} ພິມ</button><button class="btn btn-ghost btn-sm" data-download="${rec.id}">${ic('file2')} ດາວໂຫລດ</button>${isAdmin?`<button class="btn btn-ghost btn-sm" data-doc-del="${rec.id}" style="color:#B23A2E">${ic('x')} ລຶບ</button>`:''}<button class="btn btn-gold btn-sm" data-nav="archive">${ic('db')} ໄປຄັງເອກະສານ</button>`;
   return `<div class="page docview">
-    <div class="doc-toolbar no-print">
-      <button class="btn btn-ghost btn-sm" data-back="${rec.module}">${ic('chevron')} ກັບຄືນ${m?' ໄປ'+m.label.replace(/\s*\(.*\)/,''):''}</button>
-      <div class="spacer"></div>
-      <button class="btn btn-ghost btn-sm" data-print>${ic('print')} ພິມ</button>
-      <button class="btn btn-ghost btn-sm" data-download="${rec.id}">${ic('file2')} ດາວໂຫລດ</button>
-      <button class="btn btn-ghost btn-sm" data-doc-del="${rec.id}" style="color:#B23A2E">${ic('x')} ລຶບ</button>
-      <button class="btn btn-gold btn-sm" data-nav="archive">${ic('db')} ໄປຄັງເອກະສານ</button>
-    </div>
-    <div id="print-area">${buildDocHTML(rec)}</div>
-    ${relatedLinks(rec.module)}
+    <div class="doc-toolbar no-print">${tools}</div>
+    <div id="print-area">${editing?editDocHTML(rec):buildDocHTML(rec)}</div>
+    ${editing?'':relatedLinks(rec.module)}
   </div>`;
 }
 
@@ -2621,7 +2723,7 @@ function renderArchive(){
   </div>`;
 }
 
-function viewDoc(id){ state.doc=id; closeDrawer(); hidePop(); closeEmp(); renderShell(); }
+function viewDoc(id){ state.doc=id; state.docEdit=false; closeDrawer(); hidePop(); closeEmp(); renderShell(); }
 
 function downloadDoc(id){
   const rec = SAVED.find(d=>d.id===id); if(!rec) return;
@@ -2737,7 +2839,7 @@ function seedSavedDocs(){
   DB.discipline.forEach(x=>mk({ module:'discipline', docNo:x.no, docType:'ໃບດຳເນີນວິໄນ', date:x.date, name:x.name, status:x.status,
     sections:[ {title:'ລາຍລະອຽດ', rows:[['ພະນັກງານ',x.name],['ລະດັບມາດຕະການ',x.level],['ເຫດການ',x.reason],['ວັນທີ',x.date]]} ] }));
 }
-seedSavedDocs();
+/* seedSavedDocs(); — ປິດການ seed ຂໍ້ມູນປອມ: ຄັງເອກະສານເລີ່ມຕົ້ນຫວ່າງ */
 
 /* ============================================================
    v3 — STAFF DIRECTORY · PROFILES · IDENTITY · CONTRACT TRACKING
