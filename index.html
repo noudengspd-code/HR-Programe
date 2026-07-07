@@ -711,7 +711,7 @@ const I = {
 const ic = (n,cls='') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[n]||''}</svg>`;
 
 /* ---------- STATE ---------- */
-const state = { role:'hr', page:'dashboard', drawer:false, manualKey:null, manualTab:'overview', doc:null, docEdit:false, authUser:null };
+const state = { role:'hr', page:'dashboard', drawer:false, manualKey:null, manualTab:'overview', doc:null, docEdit:false, staffForm:null, authUser:null };
 
 /* ---------- COMPANY PROFILE (configurable, official header) ---------- */
 const company = {
@@ -732,49 +732,15 @@ const ROLES = {
 
 /* ---------- SAMPLE DATA ---------- */
 const DB = {
-  employees:[
-    {id:'EMP-001', name:'ທ. ສົມສະຫວາດ ວົງສະຫວັນ', dept:'ບໍລິຫານ & ບຸກຄະລາກອນ', pos:'ຫົວໜ້າພະແນກບໍລິຫານ', level:1, type:'ປະຈຳ', salary:9500000, start:'2019-01-10', end:'—', status:'ປະຈຳ', dob:'1984-05-12', gender:'ຊາຍ', phone:'020 55 123 456', idcard:'01-2400000001', village:'ບ້ານ ໂພນສະຫວ່າງ', district:'ໄຊເສດຖາ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'somsavath@vtmacc.la', color:'#1F6F66', skills:['ການບໍລິຫານອົງກອນ','ກົດໝາຍແຮງງານ','ການວາງແຜນຍຸດທະສາດ'], quals:['ປະລິນຍາໂທ ບໍລິຫານທຸລະກິດ (MBA)','ໃບຢັ້ງຢືນ HR Professional']},
-    {id:'EMP-011', name:'ທ. ໄກສອນ ບຸບຜາ', dept:'ບໍລິຫານ & ບຸກຄະລາກອນ', pos:'ພະນັກງານ HR', level:4, type:'ປະຈຳ', salary:5200000, start:'2023-04-01', end:'—', status:'ປະຈຳ', dob:'1996-09-03', gender:'ຊາຍ', phone:'020 55 654 321', idcard:'01-2400000011', village:'ບ້ານ ສະພານທອງ', district:'ສີສັດຕະນາກ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'kaysone@vtmacc.la', color:'#2E7D74', skills:['ການຄັດເລືອກບຸກຄະລາກອນ','ການຄຸ້ມຄອງເອກະສານ'], quals:['ປະລິນຍາຕີ ບໍລິຫານ']},
-    {id:'EMP-003', name:'ທ. ວິໄຊ ພົມມະຈັນ', dept:'ບັນຊີ', pos:'ຫົວໜ້າພະແນກບັນຊີ', level:1, type:'ປະຈຳ', salary:8800000, start:'2021-06-01', end:'—', status:'ປະຈຳ', dob:'1987-02-20', gender:'ຊາຍ', phone:'020 22 111 222', idcard:'01-2400000003', village:'ບ້ານ ດົງປ່າແລນ', district:'ໄຊເສດຖາ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'vixay@vtmacc.la', color:'#8A5A2B', skills:['ບັນຊີການເງິນ','ມາດຕະຖານ IFRS','ການກວດສອບ'], quals:['ປະລິນຍາຕີ ບັນຊີ','ໃບອະນຸຍາດຜູ້ເຮັດບັນຊີ']},
-    {id:'EMP-004', name:'ນາງ ຄຳຫຼ້າ ສີສະຫວາດ', dept:'ບັນຊີ', pos:'ຮອງຫົວໜ້າພະແນກບັນຊີ', level:2, type:'ປະຈຳ', salary:7000000, start:'2022-02-15', end:'—', status:'ປະຈຳ', dob:'1991-11-08', gender:'ຍິງ', phone:'020 22 333 444', idcard:'01-2400000004', village:'ບ້ານ ໜອງບອນ', district:'ໄຊເສດຖາ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'khamla@vtmacc.la', color:'#A86B2D', skills:['ບັນຊີຕົ້ນທຶນ','ພາສີ-ອາກອນ'], quals:['ປະລິນຍາຕີ ບັນຊີ']},
-    {id:'EMP-005', name:'ທ. ບຸນມີ ໄຊຍະວົງ', dept:'ບັນຊີ', pos:'ພະນັກງານບັນຊີອາວຸໂສ', level:3, type:'ມີກຳນົດ', salary:5600000, start:'2023-09-01', end:'2026-08-31', status:'ປະຈຳ', dob:'1994-07-19', gender:'ຊາຍ', phone:'020 78 555 666', idcard:'01-2400000005', village:'ບ້ານ ຈອມມະນີ', district:'ໄຊທານີ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'bounmy@vtmacc.la', color:'#B5762F', skills:['ບັນຊີລາຍວັນ','ກະທົບຍອດທະນາຄານ'], quals:['ປະລິນຍາຕີ ບັນຊີ']},
-    {id:'EMP-012', name:'ນາງ ສຸພາ ໄຊສົມບັດ', dept:'ບັນຊີ', pos:'ນັກສຶກສາຝຶກງານ', level:5, type:'ຝຶກງານ', salary:0, start:'2026-04-01', end:'2026-07-01', status:'ກຳລັງທົດລອງ', dob:'2003-03-30', gender:'ຍິງ', phone:'020 96 777 888', idcard:'01-2400000012', village:'ບ້ານ ຫ້ວຍຫົງ', district:'ຈັນທະບູລີ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'soupha@nuol.edu.la', color:'#C99A3E', skills:['Excel ພື້ນຖານ','ການບັນທຶກ Voucher'], quals:['ກຳລັງສຶກສາ ປະລິນຍາຕີ ບັນຊີ (ປີ 4)']},
-    {id:'EMP-002', name:'ນາງ ມາລີ ສຸວັນນະ', dept:'ການເງິນ', pos:'ຫົວໜ້າພະແນກການເງິນ', level:1, type:'ປະຈຳ', salary:9000000, start:'2020-03-01', end:'—', status:'ປະຈຳ', dob:'1986-12-01', gender:'ຍິງ', phone:'020 99 222 333', idcard:'01-2400000002', village:'ບ້ານ ທົ່ງສ້າງນາງ', district:'ຈັນທະບູລີ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'maly@vtmacc.la', color:'#1E5F8A', skills:['ການເງິນອົງກອນ','ງົບປະມານ','ກະແສເງິນສົດ'], quals:['ປະລິນຍາໂທ ການເງິນ']},
-    {id:'EMP-010', name:'ນາງ ພອນ ສຸກສະຫວັດ', dept:'ການເງິນ', pos:'ພະນັກງານການເງິນ', level:4, type:'ມີກຳນົດ', salary:5000000, start:'2024-01-15', end:'2026-07-14', status:'ປະຈຳ', dob:'1998-04-25', gender:'ຍິງ', phone:'020 99 444 555', idcard:'01-2400000010', village:'ບ້ານ ໂພນພະເນົາ', district:'ໄຊເສດຖາ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'phone@vtmacc.la', color:'#2C73A3', skills:['ການເບີກຈ່າຍ','ບັນຊີລູກໜີ້'], quals:['ປະລິນຍາຕີ ການເງິນ-ການທະນາຄານ']},
-    {id:'EMP-009', name:'ທ. ອານຸສິດ ຈັນທະວົງ', dept:'ໂປຣແກຣມ (IT)', pos:'ຫົວໜ້າພະແນກ IT', level:1, type:'ປະຈຳ', salary:10500000, start:'2020-08-01', end:'—', status:'ປະຈຳ', dob:'1989-08-15', gender:'ຊາຍ', phone:'020 28 111 999', idcard:'01-2400000009', village:'ບ້ານ ໂນນສະຫວ່າງ', district:'ໄຊທານີ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'anousith@vtmacc.la', color:'#3B3F8F', skills:['ສະຖາປັດຕະຍະກຳຊອບແວ','Cloud & DevOps','ຄວາມປອດໄພລະບົບ'], quals:['ປະລິນຍາໂທ ວິສະວະກຳຄອມພິວເຕີ']},
-    {id:'EMP-007', name:'ທ. ສຸກສະຫວ່າງ ແສງຈັນ', dept:'ໂປຣແກຣມ (IT)', pos:'ນັກພັດທະນາ (Developer)', level:4, type:'ທົດລອງ', salary:7500000, start:'2026-05-12', end:'2026-08-10', status:'ກຳລັງທົດລອງ', dob:'1999-10-10', gender:'ຊາຍ', phone:'020 28 222 777', idcard:'01-2400000007', village:'ບ້ານ ດອນກອຍ', district:'ສີໂຄດຕະບອງ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'souksavang@vtmacc.la', color:'#4A4FB0', skills:['JavaScript / React','Node.js','SQL'], quals:['ປະລິນຍາຕີ ວິທະຍາສາດຄອມພິວເຕີ']},
-    {id:'EMP-006', name:'ນາງ ຈັນທະລາ ພົມມະວົງ', dept:'ການຕະຫຼາດ', pos:'ຫົວໜ້າພະແນກການຕະຫຼາດ', level:1, type:'ປະຈຳ', salary:8500000, start:'2021-11-01', end:'—', status:'ປະຈຳ', dob:'1990-06-18', gender:'ຍິງ', phone:'020 77 333 111', idcard:'01-2400000006', village:'ບ້ານ ໂພນຕ້ອງ', district:'ຈັນທະບູລີ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'chanthala@vtmacc.la', color:'#9A3B6E', skills:['ການຕະຫຼາດດິຈິຕອລ','Branding','Content Strategy'], quals:['ປະລິນຍາຕີ ການຕະຫຼາດ']},
-    {id:'EMP-008', name:'ນາງ ນາລີ ວົງດາລາ', dept:'ການຕະຫຼາດ', pos:'ພະນັກງານ Content', level:4, type:'ມີກຳນົດ', salary:4800000, start:'2025-07-01', end:'2026-06-30', status:'ປະຈຳ', dob:'2000-01-22', gender:'ຍິງ', phone:'020 77 555 222', idcard:'01-2400000008', village:'ບ້ານ ໜອງໜ່ຽງ', district:'ສີສັດຕະນາກ', province:'ນະຄອນຫຼວງວຽງຈັນ', email:'naly@vtmacc.la', color:'#B0457E', skills:['ການຂຽນ Content','ອອກແບບກຣາຟິກພື້ນຖານ'], quals:['ປະລິນຍາຕີ ນິເທດສາດ']},
-  ],
-  contracts:[
-    {no:'HR-CT-2026-0007', name:'ທ. ສຸກສະຫວ່າງ', type:'ສັນຍາທົດລອງວຽກ', start:'2026-05-12', end:'2026-08-10', salary:7500000, status:'ມີຜົນ'},
-    {no:'HR-CT-2025-0042', name:'ນາງ ຈັນທະລາ', type:'ສັນຍາມີກຳນົດເວລາ', start:'2025-11-01', end:'2026-10-31', salary:4800000, status:'ມີຜົນ'},
-    {no:'HR-CT-2024-0019', name:'ທ. ວິໄຊ ພົມມະຈັນ', type:'ສັນຍາບໍ່ມີກຳນົດເວລາ', start:'2024-06-01', end:'—', salary:5200000, status:'ມີຜົນ'},
-  ],
-  timesheets:[
-    {date:'2026-06-10', client:'ໂຄງການ ABC', task:'ກວດສອບ Voucher ເດືອນ 5', start:'08:00', end:'17:30', brk:60, status:'ອະນຸມັດ'},
-    {date:'2026-06-09', client:'ລູກຄ້າ XYZ', task:'ປິດບັນຊີ ແລະ ກະທົບຍອດທະນາຄານ', start:'08:00', end:'18:30', brk:60, status:'ລໍຖ້າ'},
-  ],
-  ot:[
-    {no:'OT-2026-06-031', name:'ທ. ວິໄຊ', date:'2026-06-09', hrs:1.5, rate:1.5, amount:56250, status:'ອະນຸມັດ'},
-    {no:'OT-2026-06-030', name:'ນາງ ມາລີ', date:'2026-06-07', hrs:4, rate:2.0, amount:230769, status:'ລໍຖ້າ'},
-  ],
-  leave:[
-    {no:'LV-2026-0088', name:'ນາງ ຈັນທະລາ', type:'ລາພັກປະຈຳປີ', from:'2026-06-16', to:'2026-06-17', days:2, status:'ອະນຸມັດ'},
-    {no:'LV-2026-0089', name:'ທ. ວິໄຊ', type:'ລາປ່ວຍ', from:'2026-06-11', to:'2026-06-11', days:1, status:'ລໍຖ້າ'},
-  ],
+  employees:[],
+  contracts:[],
+  timesheets:[],
+  ot:[],
+  leave:[],
   leaveBalance:{annual:{total:15, used:6}, sick:{total:30, used:3}, personal:{total:5, used:1}},
-  kpi:[
-    {name:'ທ. ວິໄຊ ພົມມະຈັນ', dept:'ບັນຊີ', score:88, grade:'ດີຫຼາຍ', month:'ພຶດສະພາ 2026'},
-    {name:'ນາງ ມາລີ ສຸວັນນະ', dept:'ການເງິນ', score:93, grade:'ດີເລີດ', month:'ພຶດສະພາ 2026'},
-    {name:'ນາງ ຈັນທະລາ', dept:'ການຕະຫຼາດ', score:74, grade:'ດີ', month:'ພຶດສະພາ 2026'},
-  ],
-  probation:[
-    {name:'ທ. ສຸກສະຫວ່າງ', dept:'ໂປຣແກຣມ', stage:'60 ມື້', due:'2026-07-11', score:82, status:'ກຳລັງທົດລອງ'},
-  ],
-  discipline:[
-    {no:'DIS-2026-0003', name:'(ປິດຊື່)', level:'ໜັງສືແຈ້ງເຕືອນ ຄັ້ງທີ 1', reason:'ມາວຽກຊ້າຊ້ຳ', date:'2026-06-02', status:'ຕິດຕາມ'},
-  ],
+  kpi:[],
+  probation:[],
+  discipline:[],
 };
 
 /* ---------- 16 MODULE CONFIG (nav + form blueprint) ---------- */
@@ -1136,7 +1102,7 @@ function renderShell(){
       </div>
       <div class="topbar-sys">${ic('chevron','ic')} <b>${sysTitle}</b></div>
       <div class="topbar-actions">
-        <button class="conn-pill ${Store.online?'on':(Store._trying?'try':(Store._error?'err':''))}" data-fb-status title="ສະຖານະການເຊື່ອມຕໍ່ຖານຂໍ້ມູນ — ກົດເພື່ອເບິ່ງລາຍລະອຽດ">${Store.online?'ອອນລາຍ':(Store._trying?'ກຳລັງເຊື່ອມ...':(Store._error?'ຜິດພາດ':'Local'))}</button>
+        <button class="conn-pill ${Store._ready?'on':(Store._trying?'try':(Store._error?'err':''))}" data-fb-status title="ສະຖານະການເຊື່ອມຕໍ່ຖານຂໍ້ມູນ — ກົດເພື່ອເບິ່ງລາຍລະອຽດ">${Store._ready?'ອອນລາຍ':(Store._trying?'ກຳລັງເຊື່ອມ...':(Store._error?'ຜິດພາດ':'Local'))}</button>
         ${manBtn}
         <div class="user-chip">
           <div class="avatar">${escapeHtml(initials(state.authUser.name))}</div>
@@ -1273,9 +1239,10 @@ function dashManager(){
 }
 
 function dashEmployee(){
-  const me = DB.employees[0];
+  const me = (state.authUser && typeof empById==='function' && empById(state.authUser.empId)) || DB.employees[0] || null;
+  const meName = me ? me.name : ((state.authUser&&state.authUser.name)||'ພະນັກງານ');
   const b = DB.leaveBalance;
-  const myKpi = DB.kpi.find(k=>k.name.includes('ວິໄຊ'))||DB.kpi[0];
+  const myKpi = (me && DB.kpi.find(k=>k.name&&k.name.includes(me.name))) || DB.kpi[0] || {score:'—',grade:'—'};
   const stats = `<div class="grid g4">
     ${statCard('clock', '168 ຊມ', 'ຊມ ເຮັດວຽກເດືອນນີ້', {dir:'up',txt:'ຄົບ'})}
     ${statCard('bolt', '5.5 ຊມ', 'OT ສະສົມເດືອນນີ້', null)}
@@ -1288,7 +1255,7 @@ function dashEmployee(){
     <td class="mono">${o.no}</td><td>${o.date}</td><td class="num">${o.hrs} ຊມ</td><td class="num">×${o.rate}</td><td class="num">${kip(o.amount)}</td><td>${statusBadge(o.status)}</td></tr>`);
   const tsRows = DB.timesheets.map(t=>`<tr><td>${t.date}</td><td>${t.client}</td><td>${t.task}</td><td>${t.start}–${t.end}</td><td>${statusBadge(t.status)}</td></tr>`);
   return `<div class="page">
-    ${pageHead({eyebrow:'ໜ້າຫຼັກ · ພະນັກງານ', title:`ສະບາຍດີ, ${me.name}`, desc:'ເບິ່ງເວລາເຮັດວຽກ, OT, ການລາ ແລະ KPI ຂອງທ່ານ ພ້ອມເປີດຄູ່ມືໄດ້ທຸກໜ້າ.'})}
+    ${pageHead({eyebrow:'ໜ້າຫຼັກ · ພະນັກງານ', title:`ສະບາຍດີ, ${escapeHtml(meName)}`, desc:'ເບິ່ງເວລາເຮັດວຽກ, OT, ການລາ ແລະ KPI ຂອງທ່ານ ພ້ອມເປີດຄູ່ມືໄດ້ທຸກໜ້າ.'})}
     ${stats}
     <div style="height:18px"></div>
     <div class="grid g2">
@@ -2076,14 +2043,16 @@ function saveCompany(){
 /* ---- Firebase config (entered from Settings) ---- */
 function getFbConfig(){ try{ if(typeof localStorage!=='undefined'){ const raw=localStorage.getItem(FB_KEY); if(raw) return JSON.parse(raw); } }catch(e){} return FIREBASE_CONFIG; }
 function connectFirebase(){
-  const ta=$('#fb-config'); if(!ta){ toast('ບໍ່ພົບຊ່ອງ config', false); return; }
-  let cfg; try{ cfg=JSON.parse(ta.value); }catch(e){ toast('Config ບໍ່ຖືກຮູບແບບ JSON', false); return; }
-  if(!cfg || !cfg.apiKey || !cfg.projectId){ toast('Config ຕ້ອງມີ apiKey ແລະ projectId', false); return; }
+  const g=id=>{ const el=$('#'+id); return el?el.value.trim():''; };
+  const cfg={ apiKey:g('fbc-apiKey'), authDomain:g('fbc-authDomain'), projectId:g('fbc-projectId'), storageBucket:g('fbc-storageBucket'), messagingSenderId:g('fbc-messagingSenderId'), appId:g('fbc-appId') };
+  const meas=g('fbc-measurementId'); if(meas) cfg.measurementId=meas;
+  if(!cfg.authDomain && cfg.projectId) cfg.authDomain=cfg.projectId+'.firebaseapp.com';
+  if(!cfg.apiKey || !cfg.projectId || !cfg.appId){ toast('ຕ້ອງໃສ່ຢ່າງໜ້ອຍ: apiKey, projectId ແລະ appId', false); return; }
   try{ if(typeof localStorage!=='undefined') localStorage.setItem(FB_KEY, JSON.stringify(cfg)); }catch(e){}
-  toast('ກຳລັງເຊື່ອມຕໍ່ Firebase...', true);
-  Promise.resolve(initOnline()).then(ok=>{ toast(ok?'ເຊື່ອມຕໍ່ສຳເລັດ · ໂໝດອອນລາຍ':('ເຊື່ອມຕໍ່ບໍ່ສຳເລັດ'+(Store._error?': '+Store._error:'')), !!ok); renderShell(); });
+  toast('ບັນທຶກ config ໃໝ່ແລ້ວ — ກຳລັງໂຫຼດຄືນເພື່ອນຳໃຊ້ຖານຂໍ້ມູນໃໝ່...', true);
+  setTimeout(()=>{ if(typeof location!=='undefined' && location.reload){ try{ location.reload(); }catch(e){} } else { Promise.resolve(initOnline()).then(()=>renderShell()); } }, 900);
 }
-function disconnectFirebase(){ if(Store._unsub){ try{ Store._unsub(); }catch(e){} Store._unsub=null; } try{ if(typeof localStorage!=='undefined') localStorage.removeItem(FB_KEY); }catch(e){} Store.online=false; Store.add=null; Store.remove=null; toast('ຕັດການເຊື່ອມຕໍ່ — ກັບສູ່ໂໝດ Local (config ຖືກຝັງໄວ້ ຈຶ່ງເຊື່ອມຄືນເມື່ອໂຫຼດໜ້າໃໝ່)', true); renderShell(); }
+function disconnectFirebase(){ if(Store._unsub){ try{ Store._unsub(); }catch(e){} Store._unsub=null; } if(Store._eunsub){ try{ Store._eunsub(); }catch(e){} Store._eunsub=null; } try{ if(typeof localStorage!=='undefined') localStorage.removeItem(FB_KEY); }catch(e){} Store.online=false; Store._ready=false; Store.add=null; Store.remove=null; Store.addEmp=null; Store.removeEmp=null; toast('ຕັດການເຊື່ອມຕໍ່ — ກັບສູ່ໂໝດ Local (config ຝັງໄວ້ ຈຶ່ງເຊື່ອມຄືນເມື່ອໂຫຼດໜ້າໃໝ່)', true); renderShell(); }
 async function wipeAllDocs(){
   if(typeof confirm==='function' && !confirm('ຢືນຢັນລ້າງເອກະສານທັງໝົດ (local + cloud)? ບໍ່ສາມາດກູ້ຄືນໄດ້.')) return;
   if(Store.online && Store._col && Store._db){
@@ -2118,8 +2087,72 @@ async function testConnection(){
   s=step('🎉 ສຳເລັດທັງໝົດ — ກຳລັງເປີດໂໝດອອນລາຍ'); s.s='ok'; render();
   await initOnline(); renderShell();
 }
+/* ============================================================
+   EMPLOYEE MASTER DATA (real data, admin-managed, cloud-synced)
+   ============================================================ */
+const EMP_KEY='hrms_employees_v1';
+const EMP_COLORS=['#1F6F66','#2E7D74','#8A5A2E','#9A3B6E','#2C5A7A','#5B6E2E','#7A3B8A','#B0457E','#2F6B4F','#6E4A2E'];
+function persistEmployees(){ try{ if(typeof localStorage!=='undefined') localStorage.setItem(EMP_KEY, JSON.stringify(DB.employees)); }catch(e){} }
+function loadEmployees(){ try{ if(typeof localStorage!=='undefined'){ const raw=localStorage.getItem(EMP_KEY); if(raw){ const a=JSON.parse(raw); if(Array.isArray(a)){ DB.employees.length=0; a.forEach(x=>DB.employees.push(x)); } } } }catch(e){} }
+function nextEmpId(){ let mx=0; DB.employees.forEach(e=>{ const n=parseInt(String(e.id).replace(/\D/g,''),10); if(n>mx) mx=n; }); return 'EMP-'+String(mx+1).padStart(3,'0'); }
+function saveEmployeeToCloud(e){ if(Store.online && Store.addEmp){ try{ const p=Store.addEmp(e); if(p&&p.catch) p.catch(()=>{}); }catch(err){} } }
+function removeEmployeeFromCloud(id){ if(Store.online && Store.removeEmp){ try{ const p=Store.removeEmp(id); if(p&&p.catch) p.catch(()=>{}); }catch(err){} } }
+function emptyEmp(){ return {id:'', name:'', dept:DEPTS[0], pos:'', level:4, type:'ປະຈຳ', salary:0, start:today(), end:'—', status:'ປົກກະຕິ', dob:'', gender:'ຊາຍ', phone:'', idcard:'', village:'', district:'', province:'', email:'', color:EMP_COLORS[DB.employees.length%EMP_COLORS.length], skills:[], quals:[] }; }
+function staffFormHTML(){
+  const editId=(state.staffForm && state.staffForm!=='new')?state.staffForm:null;
+  const e = editId ? (DB.employees.find(x=>x.id===editId)||emptyEmp()) : emptyEmp();
+  const deptOpts=DEPTS.map(d=>`<option value="${escapeHtml(d)}" ${e.dept===d?'selected':''}>${escapeHtml(d)}</option>`).join('');
+  const lvlOpts=[1,2,3,4,5].map(L=>`<option value="${L}" ${e.level===L?'selected':''}>${LEVELS[L]}</option>`).join('');
+  const typeOpts=['ປະຈຳ','ມີກຳນົດ','ທົດລອງ','ນັກສຶກສາຝຶກງານ'].map(t=>`<option ${e.type===t?'selected':''}>${t}</option>`).join('');
+  const genOpts=['ຊາຍ','ຍິງ'].map(t=>`<option ${e.gender===t?'selected':''}>${t}</option>`).join('');
+  const F=(lab,ctrl)=>`<div class="field"><label>${lab}</label>${ctrl}</div>`;
+  return `<div class="card card-pad" style="margin-bottom:16px;border-color:var(--gold-soft)">
+    <div class="section-title"><span class="num">${ic('users')}</span> ${editId?'ແກ້ໄຂພະນັກງານ ('+escapeHtml(editId)+')':'ເພີ່ມພະນັກງານໃໝ່'}</div>
+    <div class="grid g2" style="gap:10px 14px">
+      ${F('ຊື່ ແລະ ນາມສະກຸນ *', `<input id="emp-f-name" type="text" value="${escapeHtml(e.name)}" placeholder="ຊື່-ສະກຸນ">`)}
+      ${F('ຕຳແໜ່ງ', `<input id="emp-f-pos" type="text" value="${escapeHtml(e.pos)}" placeholder="ຕຳແໜ່ງ">`)}
+      ${F('ພະແນກ', `<select id="emp-f-dept">${deptOpts}</select>`)}
+      ${F('ລະດັບຕຳແໜ່ງ', `<select id="emp-f-level">${lvlOpts}</select>`)}
+      ${F('ປະເພດ', `<select id="emp-f-type">${typeOpts}</select>`)}
+      ${F('ສະຖານະ', `<input id="emp-f-status" type="text" value="${escapeHtml(e.status)}">`)}
+      ${F('ເບີໂທ', `<input id="emp-f-phone" type="text" value="${escapeHtml(e.phone)}">`)}
+      ${F('ອີເມລ', `<input id="emp-f-email" type="text" value="${escapeHtml(e.email)}">`)}
+      ${F('ວັນເລີ່ມງານ', `<input id="emp-f-start" type="date" value="${escapeHtml(e.start&&e.start!=='—'?e.start:'')}">`)}
+      ${F('ວັນສິ້ນສຸດສັນຍາ', `<input id="emp-f-end" type="date" value="${escapeHtml(e.end&&e.end!=='—'?e.end:'')}">`)}
+      ${F('ເງິນເດືອນ (ກີບ)', `<input id="emp-f-salary" type="number" min="0" value="${Number(e.salary)||0}">`)}
+      ${F('ວັນເດືອນປີເກີດ', `<input id="emp-f-dob" type="date" value="${escapeHtml(e.dob||'')}">`)}
+      ${F('ເພດ', `<select id="emp-f-gender">${genOpts}</select>`)}
+      ${F('ເລກບັດປະຈຳຕົວ', `<input id="emp-f-idcard" type="text" value="${escapeHtml(e.idcard)}">`)}
+      ${F('ແຂວງ', `<input id="emp-f-province" type="text" value="${escapeHtml(e.province)}">`)}
+      ${F('ເມືອງ', `<input id="emp-f-district" type="text" value="${escapeHtml(e.district)}">`)}
+      ${F('ບ້ານ', `<input id="emp-f-village" type="text" value="${escapeHtml(e.village)}">`)}
+      ${F('ຄວາມສາມາດ (ຄັ່ນດ້ວຍ ,)', `<input id="emp-f-skills" type="text" value="${escapeHtml((e.skills||[]).join(', '))}">`)}
+      ${F('ວຸດທິການສຶກສາ (ຄັ່ນດ້ວຍ ,)', `<input id="emp-f-quals" type="text" value="${escapeHtml((e.quals||[]).join(', '))}">`)}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-gold btn-sm" data-emp-save>${ic('check')} ບັນທຶກ</button>
+      <button class="btn btn-ghost btn-sm" data-emp-cancel>${ic('x')} ຍົກເລີກ</button>
+    </div>
+  </div>`;
+}
+function saveEmployee(){
+  const g=id=>{ const el=$('#'+id); return el?el.value.trim():''; };
+  const name=g('emp-f-name'); if(!name){ toast('ກະລຸນາໃສ່ຊື່ພະນັກງານ', false); return; }
+  const editId=(state.staffForm && state.staffForm!=='new')?state.staffForm:null;
+  let e = editId ? DB.employees.find(x=>x.id===editId) : null;
+  const isNew=!e; if(isNew){ e=emptyEmp(); e.id=nextEmpId(); }
+  e.name=name; e.dept=g('emp-f-dept')||e.dept; e.pos=g('emp-f-pos'); e.level=Number(g('emp-f-level'))||4; e.type=g('emp-f-type')||e.type;
+  e.phone=g('emp-f-phone'); e.email=g('emp-f-email'); e.start=g('emp-f-start')||e.start; e.end=g('emp-f-end')||'—';
+  e.salary=Number(g('emp-f-salary'))||0; e.status=g('emp-f-status')||'ປົກກະຕິ'; e.dob=g('emp-f-dob'); e.gender=g('emp-f-gender')||e.gender;
+  e.idcard=g('emp-f-idcard'); e.province=g('emp-f-province'); e.district=g('emp-f-district'); e.village=g('emp-f-village');
+  const sk=g('emp-f-skills'); e.skills = sk?sk.split(',').map(s=>s.trim()).filter(Boolean):[];
+  const ql=g('emp-f-quals'); e.quals = ql?ql.split(',').map(s=>s.trim()).filter(Boolean):[];
+  if(isNew) DB.employees.push(e);
+  persistEmployees(); saveEmployeeToCloud(e); state.staffForm=null; toast(isNew?'ເພີ່ມພະນັກງານແລ້ວ':'ບັນທຶກການແກ້ໄຂແລ້ວ', true); renderShell();
+}
+function deleteEmployee(id){ const i=DB.employees.findIndex(e=>e.id===id); if(i<0) return; if(typeof confirm==='function' && !confirm('ຢືນຢັນລຶບພະນັກງານນີ້? ບໍ່ສາມາດກູ້ຄືນໄດ້.')) return; removeEmployeeFromCloud(id); DB.employees.splice(i,1); persistEmployees(); toast('ລຶບພະນັກງານແລ້ວ', true); renderShell(); }
 function renderSettings(){
-  const savedFb=getFbConfig(); const fbCfgStr = savedFb?escapeHtml(JSON.stringify(savedFb,null,2)):'';
+  const savedFb=getFbConfig()||{};
   const matrixRows = MODULES.filter(m=>m.key!=='dashboard').map(m=>{
     const cell = r => m.roles.includes(r)
       ? `<td class="num" style="color:var(--success)">${ic('check')}</td>`
@@ -2174,7 +2207,7 @@ function renderSettings(){
       </div>
     </div>
     <div class="card card-pad" style="margin-top:16px">
-      <div class="section-title"><span class="num">${ic('db')}</span> ເຊື່ອມຕໍ່ຖານຂໍ້ມູນ (Firebase · ໃຊ້ງານອອນລາຍ) <span style="margin-left:auto">${Store.online?'<span class="badge b-success">ເຊື່ອມຕໍ່ແລ້ວ · ອອນລາຍ</span>':'<span class="badge b-mute">Local (ຍັງບໍ່ເຊື່ອມ)</span>'}</span></div>
+      <div class="section-title"><span class="num">${ic('db')}</span> ເຊື່ອມຕໍ່ຖານຂໍ້ມູນ (Firebase · ໃຊ້ງານອອນລາຍ) <span style="margin-left:auto">${Store._ready?('<span class="badge b-success">ອອນລາຍ · ຂໍ້ມູນ '+SAVED.length+' ອັນ</span>'):(Store._trying?'<span class="badge b-mute">ກຳລັງເຊື່ອມ...</span>':(Store._error?'<span class="badge" style="background:var(--danger-soft);color:var(--danger)">ຜິດພາດ</span>':'<span class="badge b-mute">Local (ຍັງບໍ່ເຊື່ອມ)</span>'))}</span></div>
       ${Store._error?`<div class="callout co-warn"><b>ຂໍ້ຜິດພາດການເຊື່ອມຕໍ່ຫຼ້າສຸດ</b>${escapeHtml(String(Store._error))}</div>`:''}
       <p class="nm" style="font-size:12.5px;color:var(--text-2);margin-bottom:8px">ໃຊ້ Firestore ຂອງ Firebase ເພື່ອເກັບຂໍ້ມູນອອນລາຍ ແລະ ຊິ້ງ realtime ຂ້າມອຸປະກອນ. ໂໝດ local ໃຊ້ໄດ້ປົກກະຕິໂດຍບໍ່ຕ້ອງເຊື່ອມ.</p>
       <ol style="font-size:12px;color:var(--text-2);margin:0 0 10px 18px;line-height:1.75">
@@ -2184,7 +2217,15 @@ function renderSettings(){
         <li>ກົດ “ເຊື່ອມຕໍ່ຖານຂໍ້ມູນ” — ເອກະສານຈະຊິ້ງໃນ collection <b>hrms_documents</b></li>
       </ol>
       <div class="callout co-info" style="margin-bottom:10px"><b>ຖ້າຍັງເປັນ Local ບໍ່ຍອມເຊື່ອມ</b>1) ຕ້ອງເປີດແອັບຜ່ານ <b>https</b> (ເຊັ່ນ Firebase Hosting / Netlify) — ການເປີດໄຟລ໌ແບບ file:// ຫຼື ໃນໜ້າ preview ມັກຖືກ browser ບລັອກການໂຫລດ SDK. 2) ຢູ່ Firestore ຕັ້ງ <b>Rules</b> ໃຫ້ອະນຸຍາດ read, write (ຕອນທົດລອງ: <code>allow read, write: if true;</code>). ຈາກນັ້ນກົດ “ເຊື່ອມຕໍ່ຖານຂໍ້ມູນ” ຄືນ. config ຝັງໄວ້ໃນຊ່ອງລຸ່ມແລ້ວ.</div>
-      <textarea id="fb-config" rows="7" spellcheck="false" placeholder='{ "apiKey": "...", "authDomain": "xxx.firebaseapp.com", "projectId": "xxx", "appId": "..." }' style="width:100%;font-family:ui-monospace,monospace;font-size:12px;padding:10px;border:1px solid var(--line-2);border-radius:8px;resize:vertical;color:var(--ink-3)">${fbCfgStr}</textarea>
+      <div class="grid g2" style="gap:10px 14px">
+        <div class="field"><label>apiKey</label><input id="fbc-apiKey" type="text" spellcheck="false" value="${escapeHtml(savedFb.apiKey||'')}" placeholder="AIza..."></div>
+        <div class="field"><label>authDomain</label><input id="fbc-authDomain" type="text" spellcheck="false" value="${escapeHtml(savedFb.authDomain||'')}" placeholder="xxx.firebaseapp.com"></div>
+        <div class="field"><label>projectId</label><input id="fbc-projectId" type="text" spellcheck="false" value="${escapeHtml(savedFb.projectId||'')}" placeholder="xxx"></div>
+        <div class="field"><label>appId</label><input id="fbc-appId" type="text" spellcheck="false" value="${escapeHtml(savedFb.appId||'')}" placeholder="1:xxx:web:xxx"></div>
+        <div class="field"><label>storageBucket</label><input id="fbc-storageBucket" type="text" spellcheck="false" value="${escapeHtml(savedFb.storageBucket||'')}" placeholder="xxx.appspot.com"></div>
+        <div class="field"><label>messagingSenderId</label><input id="fbc-messagingSenderId" type="text" spellcheck="false" value="${escapeHtml(savedFb.messagingSenderId||'')}" placeholder="123456789"></div>
+        <div class="field"><label>measurementId (ບໍ່ບັງຄັບ)</label><input id="fbc-measurementId" type="text" spellcheck="false" value="${escapeHtml(savedFb.measurementId||'')}" placeholder="G-XXXX"></div>
+      </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
         <button class="btn btn-gold btn-sm" data-fb-connect>${ic('send')} ເຊື່ອມຕໍ່ຖານຂໍ້ມູນ</button>
         <button class="btn btn-ghost btn-sm" data-fb-disconnect>${ic('x')} ຕັດການເຊື່ອມຕໍ່</button>
@@ -2355,7 +2396,7 @@ function wireScore(cls,totalId,gradeId){
    ============================================================ */
 function go(page){
   if(!availableModules().some(m=>m.key===page)) page='dashboard';
-  state.page=page; state.doc=null; state.docEdit=false; closeDrawer(); hidePop(); renderShell();
+  state.page=page; state.doc=null; state.docEdit=false; state.staffForm=null; closeDrawer(); hidePop(); renderShell();
 }
 function setRole(role){
   if(!ROLES[role]) return;
@@ -2369,7 +2410,7 @@ function approve(no, ok){
   renderShell();
 }
 document.addEventListener('click', e=>{
-  const t = e.target.closest('[data-nav],[data-role],[data-menu],[data-open-manual],[data-help],[data-drawer-close],[data-tab],[data-pop-open],[data-approve],[data-reject],[data-submit],[data-view-doc],[data-back],[data-print],[data-download],[data-emp],[data-emp-close],[data-emp-tab],[data-export],[data-print-table],[data-export-staff],[data-arc-export],[data-arc-print],[data-duty-add],[data-duty-del],[data-sign-pick],[data-sign-clear],[data-sig-save],[data-sig-del],[data-sig-choose],[data-sigpick-close],[data-task-view],[data-task-add],[data-task-submit],[data-task-approve],[data-task-del],[data-task-date],[data-task-nav],[data-doc-del],[data-backup-export],[data-save-company],[data-fb-connect],[data-fb-disconnect],[data-login],[data-logout],[data-login-demo],[data-fb-status],[data-doc-edit],[data-doc-save-edit],[data-doc-edit-cancel],[data-wipe-docs],[data-fb-test]');
+  const t = e.target.closest('[data-nav],[data-role],[data-menu],[data-open-manual],[data-help],[data-drawer-close],[data-tab],[data-pop-open],[data-approve],[data-reject],[data-submit],[data-view-doc],[data-back],[data-print],[data-download],[data-emp],[data-emp-close],[data-emp-tab],[data-export],[data-print-table],[data-export-staff],[data-arc-export],[data-arc-print],[data-duty-add],[data-duty-del],[data-sign-pick],[data-sign-clear],[data-sig-save],[data-sig-del],[data-sig-choose],[data-sigpick-close],[data-task-view],[data-task-add],[data-task-submit],[data-task-approve],[data-task-del],[data-task-date],[data-task-nav],[data-doc-del],[data-backup-export],[data-save-company],[data-fb-connect],[data-fb-disconnect],[data-login],[data-logout],[data-login-demo],[data-fb-status],[data-doc-edit],[data-doc-save-edit],[data-doc-edit-cancel],[data-wipe-docs],[data-fb-test],[data-emp-add],[data-emp-save],[data-emp-cancel],[data-emp-edit],[data-emp-del]');
   if(!t) return;
   const d=t.dataset;
   if(d.nav!=null) go(d.nav);
@@ -2423,6 +2464,11 @@ document.addEventListener('click', e=>{
   else if(d.docEditCancel!=null){ state.docEdit=false; renderShell(); }
   else if(d.wipeDocs!=null) wipeAllDocs();
   else if(d.fbTest!=null) testConnection();
+  else if(d.empAdd!=null){ state.staffForm='new'; state.page='staff'; renderShell(); }
+  else if(d.empSave!=null) saveEmployee();
+  else if(d.empCancel!=null){ state.staffForm=null; renderShell(); }
+  else if(d.empEdit!=null){ closeEmp(); state.staffForm=d.empEdit; state.page='staff'; renderShell(); }
+  else if(d.empDel!=null){ closeEmp(); deleteEmployee(d.empDel); }
   else if(d.submit!=null) saveFormDoc(state.page);
 });
 document.addEventListener('input', e=>{
@@ -2476,7 +2522,7 @@ const FIREBASE_CONFIG = {
 };
 const DB_KEY = 'hrms_documents_v3';
 const Store = {
-  online:false, add:null, remove:null, _error:null, _ready:false, _unsub:null, _trying:false, _db:null, _col:null,
+  online:false, add:null, remove:null, _error:null, _ready:false, _unsub:null, _trying:false, _db:null, _col:null, addEmp:null, removeEmp:null, _eunsub:null,
   load(){ try{ if(typeof localStorage!=='undefined'){ const raw=localStorage.getItem(DB_KEY);
       if(raw){ const arr=JSON.parse(raw); if(Array.isArray(arr)){ SAVED.length=0; arr.forEach(d=>SAVED.push(d));
         let mx=1000; SAVED.forEach(d=>{ const n=parseInt(String(d.id).replace(/\D/g,''),10); if(n>mx) mx=n; }); DOC_SEQ=mx; return true; } } } }catch(e){} return false; },
@@ -2490,7 +2536,8 @@ let _fbApp=null;
 async function initOnline(){
   const cfg = getFbConfig();
   if(!cfg || typeof window==='undefined' || typeof document==='undefined') return false;
-  Store._trying=true;
+  Store._trying=true; Store._ready=false; Store._error=null;
+  const safety = setTimeout(()=>{ if(!Store._ready){ Store._trying=false; Store.online=false; if(!Store._error) Store._error='ໝົດເວລາລໍຖ້າ Firestore (12 ວິ) — ອາດຍ້ອນ network, API key ຖືກຈຳກັດ (referrer), ຫຼື App Check. ກົດ “ທົດສອບການເຊື່ອມຕໍ່”.'; if(typeof renderShell==='function') renderShell(); } }, 12000);
   try{
     if(!(window.firebase && window.firebase.firestore)){
       await withTimeout(loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js'), 12000, 'ໂຫລດ Firebase SDK ຊ້າ/ຖືກບລັອກ (ກວດ network/CSP)');
@@ -2504,20 +2551,26 @@ async function initOnline(){
     Store.add = (rec)=> col.doc(String(rec.id)).set(fbClean(rec));
     Store.remove = (id)=> col.doc(String(id)).delete();
     /* one-time seed: if cloud is empty but we have local docs, push them up */
-    try{ const chk = await col.limit(1).get(); if(chk.empty && SAVED.length){ for(const rec of SAVED){ try{ await col.doc(String(rec.id)).set(fbClean(rec)); }catch(e){} } } }catch(e){}
+    try{ const chk = await withTimeout(col.limit(1).get(), 10000, 'get timeout'); if(chk.empty && SAVED.length){ for(const rec of SAVED){ try{ await col.doc(String(rec.id)).set(fbClean(rec)); }catch(e){} } } }catch(e){}
     if(Store._unsub){ try{ Store._unsub(); }catch(e){} }
     Store._unsub = col.onSnapshot(snap=>{
       const arr=[]; snap.forEach(doc=>{ const d=doc.data(); d._fid=doc.id; arr.push(d); });
       arr.sort((a,b)=> String(a.docNo||'').localeCompare(String(b.docNo||'')));
       SAVED.length=0; arr.forEach(d=>SAVED.push(d));
       let mx=1000; SAVED.forEach(d=>{ const n=parseInt(String(d.id).replace(/\D/g,''),10); if(n>mx) mx=n; }); if(mx>DOC_SEQ) DOC_SEQ=mx;
-      Store.persist(); Store._ready=true; Store._error=null;
+      clearTimeout(safety); Store.persist(); Store.online=true; Store._ready=true; Store._trying=false; Store._error=null;
       if(typeof renderShell==='function') renderShell();
-    }, err=>{ Store._error=(err&&(err.code||err.message))||'snapshot error'; if(typeof console!=='undefined') console.warn('snapshot error', err); toast('Firestore ຜິດພາດ: '+Store._error+' — ກວດ Rules ຂອງ Firestore', false); if(typeof renderShell==='function') renderShell(); });
-    Store.online = true; Store._error=null; Store._trying=false;
-    setTimeout(()=>{ if(Store.online && !Store._ready){ Store._error='ໝົດເວລາລໍຖ້າ Firestore — ກວດ Rules / network / ຕ້ອງເປີດຜ່ານ https'; if(typeof renderShell==='function') renderShell(); } }, 12000);
+    }, err=>{ clearTimeout(safety); Store.online=false; Store._ready=false; Store._trying=false; Store._error=(err&&(err.code||err.message))||'snapshot error'; if(typeof console!=='undefined') console.warn('snapshot error', err); toast('Firestore ຜິດພາດ: '+Store._error+' — ກວດ Rules/API key', false); if(typeof renderShell==='function') renderShell(); });
+    /* employees collection realtime sync */
+    const ecol = db.collection('hrms_employees');
+    Store.addEmp = (e)=> ecol.doc(String(e.id)).set(fbClean(e));
+    Store.removeEmp = (id)=> ecol.doc(String(id)).delete();
+    try{ const ec = await withTimeout(ecol.limit(1).get(), 10000, 'get timeout'); if(ec.empty && DB.employees.length){ for(const e of DB.employees){ try{ await ecol.doc(String(e.id)).set(fbClean(e)); }catch(err){} } } }catch(e){}
+    if(Store._eunsub){ try{ Store._eunsub(); }catch(e){} }
+    Store._eunsub = ecol.onSnapshot(snap=>{ const arr=[]; snap.forEach(d=>{ const o=d.data(); arr.push(o); }); DB.employees.length=0; arr.forEach(o=>DB.employees.push(o)); persistEmployees(); if(typeof renderShell==='function') renderShell(); }, err=>{ if(typeof console!=='undefined') console.warn('emp snapshot error', err); });
+    Store.online = true;
     return true;
-  }catch(e){ Store.online=false; Store._trying=false; Store._error=(e&&e.message)||String(e); if(typeof console!=='undefined') console.warn('online init failed:', e); if(typeof renderShell==='function') renderShell(); return false; }
+  }catch(e){ clearTimeout(safety); Store.online=false; Store._ready=false; Store._trying=false; Store._error=(e&&e.message)||String(e); if(typeof console!=='undefined') console.warn('online init failed:', e); if(typeof renderShell==='function') renderShell(); return false; }
 }
 
 const RELATED = {
@@ -2913,14 +2966,17 @@ function renderStaff(){
       .map(g=>`<div class="lvl-row"><div class="lvl-tag">${LEVELS[g[0].level]}</div><div class="lvl-cards">${g.map(empCard).join('')}</div></div>`).join('');
     return `<div class="card card-pad dept-block"><div class="dept-h">${ic('users')} ${d} <span class="pill" style="margin-left:auto">${ppl.length} ຄົນ</span></div><div class="pyramid">${rows}</div></div>`;
   }).join('');
+  const isAdmin = state.role==='hr';
+  const host = DB.employees.length ? staffBlocks() : `<div class="card card-pad"><div class="empty" style="padding:34px 16px">${ic('users')}<h3>ຍັງບໍ່ມີຂໍ້ມູນພະນັກງານ</h3><p>${isAdmin?'ກົດ “ເພີ່ມພະນັກງານ” ຢູ່ເບື້ອງຂວາ ເພື່ອເລີ່ມເພີ່ມຂໍ້ມູນຈິງ.':'ຕິດຕໍ່ຜູ້ດູແລລະບົບ (ແອັດມິນ) ເພື່ອເພີ່ມພະນັກງານ.'}</p></div></div>`;
   return `<div class="page">
     ${pageHead({eyebrow:'ໜ້າຫຼັກ', title:'ຄັງພະນັກງານ (Staff Directory)', desc:'ໂຄງສ້າງບຸກຄະລາກອນແຍກຕາມພະແນກ ແລະ ລຳດັບຕຳແໜ່ງ. ກົດທີ່ຮູບເພື່ອເປີດໂປຣໄຟລ໌ສະບັບເຕັມ ພ້ອມ QR ສຳລັບສະແກນ.'})}
+    ${state.staffForm?staffFormHTML():''}
     <div class="card card-pad filter-bar">
       <div class="fb-item"><label>ພະແນກ</label><select data-staff-filter="dept">${deptOpts}</select></div>
       <div class="fb-item grow"><label>ຄົ້ນຫາ</label><input type="text" data-staff-filter="q" placeholder="ຊື່ / ຕຳແໜ່ງ / ລະຫັດ" value="${staffFilter.q||''}"></div>
-      <div class="fb-actions"><button class="btn btn-ghost btn-sm" data-export-staff>${ic('file2')} ສົ່ງອອກ Excel</button></div>
+      <div class="fb-actions">${isAdmin?`<button class="btn btn-gold btn-sm" data-emp-add>${ic('plus')} ເພີ່ມພະນັກງານ</button>`:''}<button class="btn btn-ghost btn-sm" data-export-staff>${ic('file2')} ສົ່ງອອກ Excel</button></div>
     </div>
-    <div id="staff-host">${staffBlocks()}</div>
+    <div id="staff-host">${host}</div>
     ${relatedLinks('archive')}
   </div>`;
 }
@@ -2986,6 +3042,7 @@ function renderEmpProfile(id){
       </div>
     </div>
     <div class="emp-tabs no-print">${tabBar}</div>
+    ${state.role==='hr'?`<div class="no-print" style="display:flex;gap:8px;padding:12px 22px 0"><button class="btn btn-ghost btn-sm" data-emp-edit="${e.id}">${ic('cog')} ແກ້ໄຂຂໍ້ມູນ</button><button class="btn btn-ghost btn-sm" data-emp-del="${e.id}" style="color:#B23A2E">${ic('x')} ລຶບພະນັກງານ</button></div>`:''}
     <div class="emp-body">${body}</div>
   </div>`;
 }
@@ -3456,6 +3513,7 @@ function renderLogin(){
   st.textContent='.pop::after{top:-5px;left:22px}';
   document.head.appendChild(st);
   loadCompany();
+  loadEmployees();
   loadAuth();
   const o=$('#overlay'); if(o) o.addEventListener('click', ()=>{ closeDrawer(); hidePop(); closeEmp(); closeSigPick(); });
   const openFromHash=()=>{ if(typeof location==='undefined') return; const m=(location.hash||'').match(/emp=([\w-]+)/); if(m && empById(m[1])) openEmp(m[1]); };
